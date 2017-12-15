@@ -24,8 +24,11 @@ cp ${phpFile} ${phpFile}_backup.${timeStamp}
 #print start of else block in tmp file
 echo "else {" > ${tmpFile}
 
+#find line num for start of last switch
+switchLineNum=$(egrep -n "^[[:blank:]]*switch[[:blank:]]*(.*)[[:blank:]]*{" ${phpFile} | tail -1 | cut -f1 -d :)
+
 #copy the case section to a tmp file
-sed -n "/^[[:blank:]]*case '${changeToEnv}':/,/^[[:blank:]]*break;/p" ${phpFile} >> ${tmpFile}
+sed -n "${switchLineNum},$ p" ${phpFile} | sed -n "/^[[:blank:]]*case '${changeToEnv}':/,/^[[:blank:]]*break;/p" >> ${tmpFile}
 
 #print else block end in tmp file
 echo "}" >> ${tmpFile}
@@ -51,4 +54,4 @@ else
 echo "${changeToEnv} not in ${phpFile}"
 exit 1
 
-fi
+fifi
