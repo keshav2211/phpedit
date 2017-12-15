@@ -34,7 +34,7 @@ sed -n "${switchLineNum},$ p" ${phpFile} | sed -n "/^[[:blank:]]*case '${changeT
 echo "}" >> ${tmpFile}
 
 #trim case and break from else block
-sed -i'.bak' "/^[[:blank:]]*case '${changeToEnv}':/d" ${tmpFile} 
+sed -i'.bak' "/^[[:blank:]]*case.*:/d" ${tmpFile} 
 sed -i'.bak' "/^[[:blank:]]*break;/d" ${tmpFile}
 
 #find line no. of else
@@ -54,4 +54,4 @@ else
 echo "${changeToEnv} not in ${phpFile}"
 exit 1
 
-fifi
+fi
