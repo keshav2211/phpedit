@@ -40,12 +40,16 @@ echo "}" >> ${tmpFile}
 sed -i'.bak' "/^[[:blank:]]*case.*:/d" ${tmpFile} 
 sed -i'.bak' "/^[[:blank:]]*break;/d" ${tmpFile}
 
-#find line no. of else
-elseLineNum=$(egrep -n "^[[:blank:]]*else {" ${phpFile} | cut -f1 -d :)
-insAtLine=$(expr ${elseLineNum} - 1)
+#prefix keys by 1
+sed -i'.bak' "s/variable_get('/variable_get('1/g" ${tmpFile}
 
-#remove contents in else block
-sed -i'.bak' "/^[[:blank:]]*else {/,/^[[:blank:]]*}/d" ${phpFile}
+#find line no. of first else
+elseLineNum=$(egrep -n "^[[:blank:]]*else {" ${phpFile} | head -1 | cut -f1 -d :)
+insAtLine=$(expr ${elseLineNum} - 1)
+elseEndLineNum=$(cat -n ${phpFile} | sed -n "${elseLineNum},$ p" | grep } | head -1 | tr -d [[:blank:]]})
+
+#remove contents in first else block
+sed -i'.bak' "${elseLineNum},${elseEndLineNum} d" ${phpFile}
 
 #insert new else block
 sed -i'.bak' -e "${insAtLine}r ${tmpFile}" ${phpFile}
